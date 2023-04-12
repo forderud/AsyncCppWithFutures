@@ -6,19 +6,12 @@
 #define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
 #include <boost/thread/future.hpp>
 
-using namespace std;
-
-// pull in boost versions of future into root namespace for convenience
-using boost::async;
-using boost::future;
-using boost::make_ready_future;
-
 
 struct MyResult {
-    string name;
+    std::string name;
     int age = 0;
 
-    operator string () const {
+    operator std::string () const {
         return "name=" + name + ", age=" + std::to_string(age);
     }
 };
@@ -28,25 +21,25 @@ public:
     MyAPI() = default;
 
     /** Async method. */
-    future<MyResult> ComputeResult() {
-        return async([this] {
+    boost::future<MyResult> ComputeResult() {
+        return boost::async([this] {
             // these two calls are slow
-            string name = DetermineName();
+            std::string name = DetermineName();
             int age = DetermineAge();
             return MyResult{ DetermineName(), DetermineAge() };
         });
     }
 
 private:
-    string DetermineName() {
+    std::string DetermineName() {
         // slow algorithm that takes time to complete
-        this_thread::sleep_for(chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
         return "Jane";
     }
     int DetermineAge() {
         // slow algorithm that takes time to complete
-        this_thread::sleep_for(chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
         return 42;
     }
@@ -60,15 +53,15 @@ int main() {
     auto f1 = obj.ComputeResult();
 
     // compose futures with non-blocking .then() continuations
-    future<std::string> f2 = f1.then([](future<MyResult> f) {
+    boost::future<std::string> f2 = f1.then([](boost::future<MyResult> f) {
         MyResult result = f.get(); //won't block since we're in a continuation
-        cout << static_cast<string>(result) << endl;
+        std::cout << static_cast<std::string>(result) << std::endl;
         // return name with last-name suffix
         return result.name + " Doe";
     });
 
-    cout << "Triggering evaluation of async chain..." << endl;
-    string result = f2.get();
+    std::cout << "Triggering evaluation of async chain..." << std::endl;
+    std::string result = f2.get();
     std::cout << result << std::endl;
 
     return 0;

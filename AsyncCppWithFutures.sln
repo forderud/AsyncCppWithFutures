@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AsyncCppWithFutures", "AsyncCppWithFutures.vcxproj", "{2D998371-DC90-4C3A-A9BF-06502FB149AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D998371-DC90-4C3A-A9BF-06502FB149AF}.Debug|x64.ActiveCfg = Debug|x64
+		{2D998371-DC90-4C3A-A9BF-06502FB149AF}.Debug|x64.Build.0 = Debug|x64
+		{2D998371-DC90-4C3A-A9BF-06502FB149AF}.Release|x64.ActiveCfg = Release|x64
+		{2D998371-DC90-4C3A-A9BF-06502FB149AF}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {75830485-3E18-4420-A380-51D34DC7E278}
+	EndGlobalSection
+EndGlobal

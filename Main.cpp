@@ -1,11 +1,13 @@
 #include <iostream>
 
-// enable boost::future type with continuations
+// enable boost::future with .then() continuations
 #define BOOST_THREAD_PROVIDES_FUTURE
 #define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
 #include <boost/thread/future.hpp>
 
 using namespace std;
+
+// pull in boost versions of future into root namespace for convenience
 using boost::future;
 using boost::make_ready_future;
 

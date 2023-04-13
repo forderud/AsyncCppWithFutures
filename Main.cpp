@@ -30,6 +30,12 @@ public:
         });
     }
 
+    std::string NextCalculation(MyResult result) {
+        std::cout << static_cast<std::string>(result) << std::endl;
+        // return name with last-name suffix
+        return std::string(result.name + " Doe");
+    }
+
 private:
     std::string DetermineName() {
         // slow algorithm that takes time to complete
@@ -55,11 +61,8 @@ int main() {
     auto f1 = obj.ComputeResult();
 
     // compose futures with non-blocking .then() continuations
-    boost::future<std::string> f2 = f1.then([](boost::future<MyResult> f) {
-        MyResult result = f.get(); //won't block since we're in a continuation
-        std::cout << static_cast<std::string>(result) << std::endl;
-        // return name with last-name suffix
-        return result.name + " Doe";
+    boost::future<std::string> f2 = f1.then([&obj](boost::future<MyResult> f) {
+        return obj.NextCalculation(f.get());
     });
 
     std::cout << "Triggering evaluation of async chain..." << std::endl;

@@ -30,7 +30,8 @@ public:
         });
     }
 
-    std::string NextCalculation(MyResult result) {
+    std::string NextCalculation(boost::future<MyResult> f) {
+        MyResult result = f.get();
         std::cout << static_cast<std::string>(result) << std::endl;
         // return name with last-name suffix
         return std::string(result.name + " Doe");
@@ -62,7 +63,7 @@ int main() {
 
     // compose futures with non-blocking .then() continuations
     boost::future<std::string> f2 = f1.then([&obj](boost::future<MyResult> f) {
-        return obj.NextCalculation(f.get());
+        return obj.NextCalculation(std::move(f));
     });
 
     std::cout << "Triggering evaluation of async chain..." << std::endl;

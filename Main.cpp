@@ -26,19 +26,21 @@ public:
             // these two calls are slow
             std::string name = DetermineName();
             int age = DetermineAge();
-            return MyResult{ DetermineName(), DetermineAge() };
+            return MyResult{ name, age };
         });
     }
 
 private:
     std::string DetermineName() {
         // slow algorithm that takes time to complete
+        std::cout << "Calling DetermineName..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
         return "Jane";
     }
     int DetermineAge() {
         // slow algorithm that takes time to complete
+        std::cout << "Calling DetermineAge..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
         return 42;
@@ -62,7 +64,7 @@ int main() {
 
     std::cout << "Triggering evaluation of async chain..." << std::endl;
     std::string result = f2.get();
-    std::cout << result << std::endl;
+    std::cout << "Result=" << result << std::endl;
 
     return 0;
 }

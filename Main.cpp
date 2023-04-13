@@ -75,11 +75,13 @@ int main() {
 
     // compose futures with non-blocking .then() continuations
     boost::future<MyResult> f2 = f1.then([&obj](boost::future<MyResult> f) {
+        SetThreadName(L"continuation #1 thread");
         return obj.NextCalculation(std::move(f));
     });
 
     // compose futures with non-blocking .then() continuations
     boost::future<MyResult> f3 = f2.then([&obj](boost::future<MyResult> f) {
+        SetThreadName(L"continuation #2 thread");
         return obj.NextCalculation(std::move(f));
     });
 

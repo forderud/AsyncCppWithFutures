@@ -12,8 +12,9 @@ inline void SetThreadName(wchar_t name[]) {
 #endif
 
 // enable boost::future with .then() continuations
+#define BOOST_THREAD_PROVIDES_VARIADIC_THREAD     // required for launch::deferred
 #define BOOST_THREAD_PROVIDES_FUTURE
-#define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
+#define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION // requried for .then()
 #include <boost/thread/future.hpp>
 
 
@@ -32,8 +33,9 @@ public:
 
     /** Async method. */
     boost::future<MyResult> ComputeResult() {
-        return boost::async(boost::launch::async, [this] {
-            SetThreadName(L"boost::async thread");
+        // use "deferred" to run everything in main thread with lazy evaluation
+        return boost::async(boost::launch::deferred, [this] {
+            //SetThreadName(L"boost::async thread");
 
             // these two calls are slow
             std::string name = DetermineName();
@@ -75,13 +77,13 @@ int main() {
 
     // compose futures with non-blocking .then() continuations
     boost::future<MyResult> f2 = f1.then([&obj](boost::future<MyResult> f) {
-        SetThreadName(L"continuation #1 thread");
+        //SetThreadName(L"continuation #1 thread");
         return obj.NextCalculation(std::move(f));
     });
 
     // compose futures with non-blocking .then() continuations
     boost::future<MyResult> f3 = f2.then([&obj](boost::future<MyResult> f) {
-        SetThreadName(L"continuation #2 thread");
+        //SetThreadName(L"continuation #2 thread");
         return obj.NextCalculation(std::move(f));
     });
 

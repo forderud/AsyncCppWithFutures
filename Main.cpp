@@ -3,13 +3,15 @@
 
 #ifdef _WIN32
 #include <Windows.h>
-inline void SetThreadName(const wchar_t name[]) {
-    SetThreadDescription(GetCurrentThread(), name);
-}
-#else
-inline void SetThreadName(wchar_t name[]) {
-}
 #endif
+
+inline void SetCurrentThreadName(const wchar_t name[]) {
+#ifdef _WIN32
+    SetThreadDescription(GetCurrentThread(), name);
+#else
+    // TODO: Figure out how to name threads on other platforms
+#endif
+}
 
 // enable boost::future with .then() continuations
 #define BOOST_THREAD_PROVIDES_VARIADIC_THREAD     // required for launch::deferred
@@ -37,7 +39,7 @@ public:
         boost::launch policy = threaded ? boost::launch::async : boost::launch::deferred;
 
         return boost::async(policy, [this] {
-            //SetThreadName(L"boost::async thread");
+            //SetCurrentThreadName(L"boost::async thread");
 
             // these two calls are slow
             std::string name = DetermineName();
@@ -81,13 +83,13 @@ int main() {
 
     // compose futures with non-blocking .then() continuations
     boost::future<MyResult> f2 = f1.then([&obj](boost::future<MyResult> f) {
-        //SetThreadName(L"continuation #1 thread");
+        //SetCurrentThreadName(L"continuation #1 thread");
         return obj.NextCalculation(std::move(f));
     });
 
     // compose futures with non-blocking .then() continuations
     boost::future<MyResult> f3 = f2.then([&obj](boost::future<MyResult> f) {
-        //SetThreadName(L"continuation #2 thread");
+        //SetCurrentThreadName(L"continuation #2 thread");
         return obj.NextCalculation(std::move(f));
     });
 

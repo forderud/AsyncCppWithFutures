@@ -32,9 +32,11 @@ public:
     MyAPI() = default;
 
     /** Async method. */
-    boost::future<MyResult> ComputeResult() {
+    boost::future<MyResult> ComputeResult(bool threaded) {
         // use "deferred" to run everything in main thread with lazy evaluation
-        return boost::async(boost::launch::deferred, [this] {
+        boost::launch policy = threaded ? boost::launch::async : boost::launch::deferred;
+
+        return boost::async(policy, [this] {
             //SetThreadName(L"boost::async thread");
 
             // these two calls are slow
@@ -73,7 +75,7 @@ int main() {
     MyAPI obj;
 
     // first future object
-    auto f1 = obj.ComputeResult();
+    auto f1 = obj.ComputeResult(false);
 
     // compose futures with non-blocking .then() continuations
     boost::future<MyResult> f2 = f1.then([&obj](boost::future<MyResult> f) {

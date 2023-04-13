@@ -32,7 +32,7 @@ public:
 
     /** Async method. */
     boost::future<MyResult> ComputeResult() {
-        return boost::async([this] {
+        return boost::async(boost::launch::async, [this] {
             SetThreadName(L"boost::async thread");
 
             // these two calls are slow

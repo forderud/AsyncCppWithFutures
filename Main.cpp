@@ -1,5 +1,8 @@
 #include <iostream>
 #include <thread>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 // enable boost::future with .then() continuations
 #define BOOST_THREAD_PROVIDES_FUTURE
@@ -23,6 +26,10 @@ public:
     /** Async method. */
     boost::future<MyResult> ComputeResult() {
         return boost::async([this] {
+#ifdef _WIN32
+            SetThreadDescription(GetCurrentThread(), L"boost::async thread");
+#endif
+
             // these two calls are slow
             std::string name = DetermineName();
             int age = DetermineAge();
@@ -30,11 +37,11 @@ public:
         });
     }
 
-    std::string NextCalculation(boost::future<MyResult> f) {
+    MyResult NextCalculation(boost::future<MyResult> f) {
         MyResult result = f.get();
         std::cout << static_cast<std::string>(result) << std::endl;
-        // return name with last-name suffix
-        return std::string(result.name + " Doe");
+        result.name += " " + DetermineName(); // add last-name suffix
+        return result;
     }
 
 private:
@@ -62,13 +69,18 @@ int main() {
     auto f1 = obj.ComputeResult();
 
     // compose futures with non-blocking .then() continuations
-    boost::future<std::string> f2 = f1.then([&obj](boost::future<MyResult> f) {
+    boost::future<MyResult> f2 = f1.then([&obj](boost::future<MyResult> f) {
+        return obj.NextCalculation(std::move(f));
+    });
+
+    // compose futures with non-blocking .then() continuations
+    boost::future<MyResult> f3 = f2.then([&obj](boost::future<MyResult> f) {
         return obj.NextCalculation(std::move(f));
     });
 
     std::cout << "Triggering evaluation of async chain..." << std::endl;
-    std::string result = f2.get();
-    std::cout << "Result=" << result << std::endl;
+    MyResult result = f3.get();
+    std::cout << "Result=" << result.name << std::endl;
 
     return 0;
 }

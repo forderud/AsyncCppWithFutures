@@ -33,7 +33,7 @@ public:
 
     /** Async method. */
     boost::future<MyResult> ComputeResult(bool threaded) {
-        // use "deferred" to run everything in main thread with lazy evaluation
+        // "deferred" will run everything in main thread with lazy evaluation
         boost::launch policy = threaded ? boost::launch::async : boost::launch::deferred;
 
         return boost::async(policy, [this] {

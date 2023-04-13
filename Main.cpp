@@ -72,10 +72,12 @@ private:
 
 
 int main() {
+    bool threaded = false; // run async chain in separate thread(s)
+
     MyAPI obj;
 
     // first future object
-    auto f1 = obj.ComputeResult(false);
+    auto f1 = obj.ComputeResult(threaded);
 
     // compose futures with non-blocking .then() continuations
     boost::future<MyResult> f2 = f1.then([&obj](boost::future<MyResult> f) {
@@ -88,6 +90,12 @@ int main() {
         //SetThreadName(L"continuation #2 thread");
         return obj.NextCalculation(std::move(f));
     });
+
+
+    if (threaded) {
+        // sleep a while to "prove" the async chain is already running before calling .get()
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
 
     std::cout << "Triggering evaluation of async chain..." << std::endl;
     MyResult result = f3.get();

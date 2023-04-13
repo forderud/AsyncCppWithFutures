@@ -1,7 +1,14 @@
 #include <iostream>
 #include <thread>
+
 #ifdef _WIN32
 #include <Windows.h>
+inline void SetThreadName(const wchar_t name[]) {
+    SetThreadDescription(GetCurrentThread(), name);
+}
+#else
+inline void SetThreadName(wchar_t name[]) {
+}
 #endif
 
 // enable boost::future with .then() continuations
@@ -26,9 +33,7 @@ public:
     /** Async method. */
     boost::future<MyResult> ComputeResult() {
         return boost::async([this] {
-#ifdef _WIN32
-            SetThreadDescription(GetCurrentThread(), L"boost::async thread");
-#endif
+            SetThreadName(L"boost::async thread");
 
             // these two calls are slow
             std::string name = DetermineName();
